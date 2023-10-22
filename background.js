@@ -60,6 +60,12 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
     {
       event: "check_if_enabled",
       data: null,
+    },
+    (response) => {
+      let lastError = chrome.runtime.lastError;
+      if (lastError) {
+        console.warn('Whoops...', lastError.message);
+      }
     }
   );
 });
