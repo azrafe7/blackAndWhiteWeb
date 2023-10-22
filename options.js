@@ -22,7 +22,7 @@ resetButton.addEventListener('click', reset);
 async function saveChanges() {
   const alwaysOn = alwaysOnCheckBox.checked;
   await storage.set({ alwaysOn: alwaysOn });
-  message('Settings saved!');
+  message('Settings saved... Reload pages for changes to take effect!');
 }
 
 function loadChanges() {
