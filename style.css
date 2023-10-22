@@ -1,6 +1,10 @@
-.blackAndWhiteWeb {
+.--blackAndWhiteWeb-filter {
   filter: 
     grayscale(1.0) 
     /* contrast(1.1) */
     !important;
+}
+
+.--blackAndWhiteWeb-invisible {
+  visibility: hidden !important;
 }
