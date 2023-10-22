@@ -1,7 +1,10 @@
 "use strict";
 
-const CSS_FILTER_CLASS = '--blackAndWhiteWeb-filter';
-const CSS_INVISIBLE_CLASS = '--blackAndWhiteWeb-invisible';
+const CSS_FILTER = '--blackAndWhiteWeb-filter';
+const CSS_INVISIBLE = '--blackAndWhiteWeb-invisible';
+const CSS_HIDE = '--blackAndWhiteWeb-hide';
+
+document.documentElement.classList.toggle(CSS_HIDE, true);
 
 (async () => {
 
@@ -14,7 +17,7 @@ const CSS_INVISIBLE_CLASS = '--blackAndWhiteWeb-invisible';
   console.log(manifest.name + " v" + manifest.version);
 
   function checkIfEnabled() {
-    let enabled = document.documentElement.classList.contains(CSS_FILTER_CLASS);
+    let enabled = document.documentElement.classList.contains(CSS_FILTER);
     chrome.runtime.sendMessage({
       event: 'set_badge',
       data: enabled
@@ -23,9 +26,9 @@ const CSS_INVISIBLE_CLASS = '--blackAndWhiteWeb-invisible';
 
   function toggle(forceEnable) {
     if (forceEnable != null) {
-      document.documentElement.classList.toggle(CSS_FILTER_CLASS, forceEnable);
+      document.documentElement.classList.toggle(CSS_FILTER, forceEnable);
     } else {
-      document.documentElement.classList.toggle(CSS_FILTER_CLASS);
+      document.documentElement.classList.toggle(CSS_FILTER);
     }
     checkIfEnabled();
   }
