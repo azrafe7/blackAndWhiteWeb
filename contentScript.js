@@ -4,8 +4,6 @@ const CSS_FILTER = '--blackAndWhiteWeb-filter';
 const CSS_INVISIBLE = '--blackAndWhiteWeb-invisible';
 const CSS_HIDE = '--blackAndWhiteWeb-hide';
 
-document.documentElement.classList.toggle(CSS_HIDE, true);
-
 (async () => {
 
   const DEBUG = false;
