@@ -1,3 +1,6 @@
 .blackAndWhiteWeb {
-  filter: grayscale(1.0) contrast(1.1) !important;
+  filter: 
+    grayscale(1.0) 
+    /* contrast(1.1) */
+    !important;
 }
