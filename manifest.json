@@ -1,0 +1,28 @@
+{
+  "name": "Black & White Web",
+  "version": "0.1.0",
+  "description": "Browse the Web in Black & White.",
+  "manifest_version": 3,
+  "permissions": ["activeTab"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["contentScript.js"],
+      "css": ["style.css"],
+      "all_frames": false
+    }
+  ],
+  "action": {
+    "default_title": "Black & White Web"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+B"
+      }
+    }
+  }
+}
