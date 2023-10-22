@@ -1,9 +1,10 @@
 {
   "name": "Black & White Web",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Browse the Web in Black & White.",
   "manifest_version": 3,
-  "permissions": ["activeTab"],
+  "permissions": ["activeTab", "storage"],
+  "options_page": "options.html",
   "background": {
     "service_worker": "background.js"
   },
@@ -12,7 +13,8 @@
       "matches": ["<all_urls>"],
       "js": ["contentScript.js"],
       "css": ["style.css"],
-      "all_frames": false
+      "all_frames": false,
+      "run_at": "document_start"
     }
   ],
   "icons": {

@@ -18,18 +18,41 @@
     });
   }
 
+  function toggle(forceEnable) {
+    if (forceEnable != null) {
+      document.documentElement.classList.toggle('blackAndWhiteWeb', forceEnable);
+    } else {
+      document.documentElement.classList.toggle('blackAndWhiteWeb');
+    }
+    checkIfEnabled();
+  }
+
   chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-    debug.log("[Black&WhiteWeb:CTX]", msg);
+    debug.log("[Black&WhiteWeb:CTX] onMessage", msg);
     const { event, data } = msg;
 
     if (event === "toggle") {
-      document.documentElement.classList.toggle('blackAndWhiteWeb');
-      checkIfEnabled();
+      let forceEnable = data;
+      toggle(forceEnable);
+    } else if (event === 'got_settings') {
+      let settings = data;
+      debug.log("[Black&WhiteWeb:CTX] settings", settings);
+      if (settings.alwaysOn) {
+        toggle(true);
+      }
     } else if (event === 'check_if_enabled') {
       checkIfEnabled();
     }
   });
   
-  checkIfEnabled();
+  function run() {
+    chrome.runtime.sendMessage({
+      event: 'request_settings',
+      data: null
+    });
+    checkIfEnabled();
+  }
+  
+  run();
   
 })();
