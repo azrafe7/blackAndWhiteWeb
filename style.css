@@ -11,11 +11,11 @@
 }
 
 .--blackAndWhiteWeb-filter-transition-in {
-  transition: filter 1s ease-in 0.5s !important;
+  transition: filter 0.5s ease-in-out !important;
 }
 
 .--blackAndWhiteWeb-filter-transition-out {
-  transition: filter 1s ease-in 0.5s !important;
+  transition: filter 0.5s ease-in-out !important;
 }
 
 .--blackAndWhiteWeb-invisible {
