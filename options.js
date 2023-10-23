@@ -12,6 +12,7 @@ const submitButton = document.querySelector('button.submit');
 const versionSpan = document.querySelector('#version');
 versionSpan.innerText = "v" + manifest.version;
 const alwaysOnCheckBox = document.querySelector('#always_on');
+const animateCheckBox = document.querySelector('#animate');
 
 // load options that may have previously been saved.
 loadChanges();
@@ -21,13 +22,18 @@ resetButton.addEventListener('click', reset);
 
 async function saveChanges() {
   const alwaysOn = alwaysOnCheckBox.checked;
-  await storage.set({ alwaysOn: alwaysOn });
+  const animate = animateCheckBox.checked;
+  await storage.set({ 
+    alwaysOn: alwaysOn,
+    animate: animate,
+  });
   message('Settings saved... Reload pages for changes to take effect!');
 }
 
 function loadChanges() {
-  storage.get('alwaysOn', function (items) {
+  storage.get(['alwaysOn', 'animate'], function (items) {
     alwaysOnCheckBox.checked = items.alwaysOn;
+    animateCheckBox.checked = items.animate;
     message('Settings loaded!');
   });
 }
@@ -35,7 +41,8 @@ function loadChanges() {
 async function reset() {
   await storage.remove('alwaysOn');
   message('Settings reset!');
-  alwaysOnCheckBox.value = false;
+  alwaysOnCheckBox.checked = false;
+  animateCheckBox.checked = false;
 }
 
 let messageClearTimer;
