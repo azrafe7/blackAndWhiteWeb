@@ -4,7 +4,7 @@
 
 .--blackAndWhiteWeb-filter {
   filter: 
-    contrast(1.05)
+    contrast(1.02)
     grayscale(1.0) 
     /* sepia(0.05) */
     !important;
