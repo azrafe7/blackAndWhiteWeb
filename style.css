@@ -1,3 +1,7 @@
+/*html {
+  display: none !important;
+}*/
+
 .--blackAndWhiteWeb-filter {
   filter: 
     grayscale(1.0) 
@@ -6,9 +10,13 @@
     !important;
 }
 
-/*html {
-  display: none !important;
-}*/
+.--blackAndWhiteWeb-filter-transition-in {
+  transition: filter 1s ease-in 1.0s !important;
+}
+
+.--blackAndWhiteWeb-filter-transition-out {
+  transition: filter 1s ease-in 1.0s !important;
+}
 
 .--blackAndWhiteWeb-invisible {
   visibility: hidden !important;
