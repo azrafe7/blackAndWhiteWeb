@@ -17,7 +17,7 @@
   console.log(manifest.name + " v" + manifest.version);
 
   let settings = {};
-  debug.log("[Black&WhiteWeb:CTX] hide HTML!");
+  debug.log("[Black&WhiteWeb:CTX] invisible HTML!");
   document.documentElement.classList.toggle(CSS_INVISIBLE, true);
 
   function checkIfEnabled() {
@@ -51,7 +51,7 @@
       let forceEnable = data;
       toggle(forceEnable);
     } else if (event === 'got_settings') {
-      debug.log("[Black&WhiteWeb:CTX] show HTML!");
+      debug.log("[Black&WhiteWeb:CTX] visible HTML!");
       document.documentElement.classList.toggle(CSS_INVISIBLE, false);
       settings = data;
       debug.log("[Black&WhiteWeb:CTX] settings", settings);
