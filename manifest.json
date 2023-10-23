@@ -14,7 +14,7 @@
       "js": ["contentScript.js"],
       "css": ["style.css"],
       "all_frames": false,
-      "run_at": "document_idle"
+      "run_at": "document_start"
     }
   ],
   "icons": {

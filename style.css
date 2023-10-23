@@ -3,9 +3,9 @@
 }*/
 
 .--blackAndWhiteWeb-filter {
-  filter: 
+  filter:
     contrast(1.02)
-    grayscale(1.0) 
+    grayscale(1.0)
     /* sepia(0.05) */
     !important;
 }
