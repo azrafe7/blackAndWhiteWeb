@@ -17,6 +17,7 @@
   console.log(manifest.name + " v" + manifest.version);
 
   let settings = {};
+  let firstRun = true;
   debug.log("[Black&WhiteWeb:CTX] invisible HTML!");
   document.documentElement.classList.toggle(CSS_INVISIBLE, true);
 
@@ -24,8 +25,12 @@
     let enabled = document.documentElement.classList.contains(CSS_FILTER);
     if (settings?.animate) {
       let transitionClass = enabled ? CSS_TRANSITION_IN : CSS_TRANSITION_OUT;
-      debug.log("[Black&WhiteWeb:CTX] transitionClass", transitionClass);
-      document.documentElement.classList.toggle(CSS_TRANSITION_IN, enabled);
+      debug.log("[Black&WhiteWeb:CTX] transitionClass", transitionClass, settings, { firstRun: firstRun });
+      if (!firstRun || (firstRun && !settings?.alwaysOn)) {
+        document.documentElement.classList.toggle(CSS_TRANSITION_IN, enabled);
+      } else {
+        firstRun = false;
+      }
       document.documentElement.classList.toggle(CSS_TRANSITION_OUT, !enabled);
     }
     chrome.runtime.sendMessage({
