@@ -1,12 +1,12 @@
 "use strict";
 
-const CSS_FILTER = '--blackAndWhiteWeb-filter';
-const CSS_INVISIBLE = '--blackAndWhiteWeb-invisible';
-const CSS_HIDE = '--blackAndWhiteWeb-hide';
-const CSS_TRANSITION_IN = '--blackAndWhiteWeb-filter-transition-in';
-const CSS_TRANSITION_OUT = '--blackAndWhiteWeb-filter-transition-out';
-
 (async () => {
+
+  const CSS_FILTER = '--blackAndWhiteWeb-filter';
+  const CSS_INVISIBLE = '--blackAndWhiteWeb-invisible';
+  const CSS_HIDE = '--blackAndWhiteWeb-hide';
+  const CSS_TRANSITION_IN = '--blackAndWhiteWeb-filter-transition-in';
+  const CSS_TRANSITION_OUT = '--blackAndWhiteWeb-filter-transition-out';
 
   const DEBUG = false;
   let debug = {
