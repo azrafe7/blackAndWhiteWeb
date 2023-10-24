@@ -7,7 +7,7 @@
   const CSS_TRANSITION_IN = '--blackAndWhiteWeb-filter-transition-in';
   const CSS_TRANSITION_OUT = '--blackAndWhiteWeb-filter-transition-out';
 
-  const DEBUG = true;
+  const DEBUG = false;
   let debug = {
     log: DEBUG ? console.log.bind(console) : () => {} // log or NO_OP
   }
