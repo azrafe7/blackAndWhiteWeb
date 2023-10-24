@@ -40,7 +40,7 @@ function loadChanges() {
 
 async function reset() {
   await storage.remove('alwaysOn');
-  message('Settings reset!');
+  message('Settings reset (but NOT saved)!');
   alwaysOnCheckBox.checked = false;
   animateCheckBox.checked = false;
 }
