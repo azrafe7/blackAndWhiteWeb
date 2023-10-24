@@ -4,7 +4,6 @@
 
   const CSS_FILTER = '--blackAndWhiteWeb-filter';
   const CSS_INVISIBLE = '--blackAndWhiteWeb-invisible';
-  const CSS_HIDE = '--blackAndWhiteWeb-hide';
   const CSS_TRANSITION_IN = '--blackAndWhiteWeb-filter-transition-in';
   const CSS_TRANSITION_OUT = '--blackAndWhiteWeb-filter-transition-out';
 
@@ -20,6 +19,17 @@
   let firstRun = true;
   debug.log("[Black&WhiteWeb:CTX] invisible HTML!");
   document.documentElement.classList.toggle(CSS_INVISIBLE, true);
+  
+  const INVISIBLE_TIMEOUT = 3000;
+  // restore visibility if settings is not populated within INVISIBLE_TIMEOUT
+  setTimeout(() => {
+    let settingsLoaded = settings && Object.keys(settings).length > 0;
+    debug.log("[Black&WhiteWeb:CTX] settingsLoaded:", settingsLoaded);
+    if (!settingsLoaded) {
+      debug.log("[Black&WhiteWeb:CTX] timed out: restore HTML visibility!");
+      document.documentElement.classList.toggle(CSS_INVISIBLE, false);
+    }
+  }, INVISIBLE_TIMEOUT);
 
   function checkIfEnabled() {
     let enabled = document.documentElement.classList.contains(CSS_FILTER);
