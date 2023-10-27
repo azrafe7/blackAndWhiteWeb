@@ -7,7 +7,7 @@
   const CSS_TRANSITION_IN = '--blackAndWhiteWeb-filter-transition-in';
   const CSS_TRANSITION_OUT = '--blackAndWhiteWeb-filter-transition-out';
 
-  const DEBUG = false;
+  const DEBUG = true;
   let debug = {
     log: DEBUG ? console.log.bind(console) : () => {} // log or NO_OP
   }
@@ -36,11 +36,11 @@
     if (settings?.animate) {
       let transitionClass = enabled ? CSS_TRANSITION_IN : CSS_TRANSITION_OUT;
       debug.log("[Black&WhiteWeb:CTX] transitionClass", transitionClass, settings, { firstRun: firstRun });
-      if (!firstRun || (firstRun && !settings?.alwaysOn)) {
+      if (!firstRun || (firstRun && !(settings?.alwaysOn))) {
         document.documentElement.classList.toggle(CSS_TRANSITION_IN, enabled);
-      } else {
-        firstRun = false;
       }
+      firstRun = false;
+      debug.log("[Black&WhiteWeb:CTX] set firstRun to ", { firstRun: firstRun });
       document.documentElement.classList.toggle(CSS_TRANSITION_OUT, !enabled);
     }
     chrome.runtime.sendMessage({
