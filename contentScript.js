@@ -26,10 +26,10 @@
     let settingsLoaded = settings && Object.keys(settings).length > 0;
     debug.log("[Black&WhiteWeb:CTX] settingsLoaded:", settingsLoaded);
     if (!settingsLoaded) {
-      debug.log("[Black&WhiteWeb:CTX] timed out: restore HTML visibility!");
+      debug.log("[Black&WhiteWeb:CTX] timed out (" + INVISIBLE_TIMEOUT + "ms): restore HTML visibility!");
       document.documentElement.classList.toggle(CSS_INVISIBLE, false);
     }
-  }, INVISIBLE_TIMEOUT);
+  },    );
 
   function checkIfEnabled() {
     let enabled = document.documentElement.classList.contains(CSS_FILTER);
@@ -40,7 +40,7 @@
         document.documentElement.classList.toggle(CSS_TRANSITION_IN, enabled);
       }
       firstRun = false;
-      debug.log("[Black&WhiteWeb:CTX] set firstRun to ", { firstRun: firstRun });
+      debug.log("[Black&WhiteWeb:CTX] set firstRun to", { firstRun: firstRun });
       document.documentElement.classList.toggle(CSS_TRANSITION_OUT, !enabled);
     }
     chrome.runtime.sendMessage({
