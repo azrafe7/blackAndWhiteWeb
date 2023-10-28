@@ -26,6 +26,12 @@
       .checkboxes input, .checkboxes label {
         vertical-align: middle;
       }
+      
+      .checkboxes textarea {
+        margin-left: 22px;
+        min-width: 350px;
+        min-height: 5em;
+      }
     </style>
   </head>
 
@@ -37,6 +43,22 @@
       <input type="checkbox" id="always_on" />
       <label for="always_on" title="Automatically enable Black & White Web on new opened pages">Always ON</label>
       <br />
+      <div id="lists">
+        <input type="checkbox" id="whitelist" />
+        <label for="whitelist" title="Only activate extension on urls containing this text">Always ON &bull; White List</label>
+        <br />
+        <textarea id="whitelist-textarea" placeholder="e.g.:
+youtube.com
+news.ycombinator.com"></textarea>
+        <br />
+        <input type="checkbox" id="blacklist" />
+        <label for="blacklist" title="Disactivate extension on urls containing this text">Always ON &bull; Black List</label>
+        <br />
+        <textarea id="blacklist-textarea" placeholder="e.g.:
+stackoverflow.com
+mail.google.com"></textarea>
+        <br />
+      </div>
       <input type="checkbox" id="animate" />
       <label for="animate" title="Animate transition to Black & White">Animate</label>
     </div>
@@ -44,6 +66,7 @@
     <br />
     <button class="submit">Save</button>
     <button class="reset">Reset</button>
+    <button class="reload">Reload</button>
 
     <script src="options.js"></script>
   </body>

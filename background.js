@@ -46,7 +46,7 @@ chrome.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
     console.log(event, data);
     setBadgeText(enabled);
   } else if (event === 'request_settings') {
-    storage.get(['alwaysOn', 'animate'], function (items) {
+    storage.get(null, function (items) {
       chrome.tabs.sendMessage(
         sender.tab.id,
         {
