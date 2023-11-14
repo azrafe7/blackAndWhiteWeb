@@ -1,6 +1,6 @@
 {
   "name": "Black & White Web",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Browse the Web in Black & White.",
   "manifest_version": 3,
   "permissions": ["activeTab", "storage"],
