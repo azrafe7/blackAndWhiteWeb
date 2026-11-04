@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Black & White Web Options</title>
+    <meta charset='UTF-8' />
     <style>
       body {
         font-family: sans-serif;
@@ -43,6 +44,11 @@
       <input type="checkbox" id="always_on" />
       <label for="always_on" title="Automatically enable Black & White Web on new opened pages">Always ON</label>
       <br />
+      <input type="checkbox" id="animate" />
+      <label for="animate" title="Animate transition to Black & White">Animate</label>
+      <br />
+      <br />
+      
       <div id="lists">
         <input type="checkbox" id="whitelist" />
         <label for="whitelist" title="Only activate extension on urls containing this text">Always ON &bull; White List</label>
@@ -59,8 +65,14 @@ stackoverflow.com
 mail.google.com"></textarea>
         <br />
       </div>
-      <input type="checkbox" id="animate" />
-      <label for="animate" title="Animate transition to Black & White">Animate</label>
+
+      <br />
+      <input type="checkbox" id="override-filter" />
+      <label for="override-filter" title="Override default CSS filter">⚠️ CSS Filter Override</label>
+      <br />
+      <textarea id="override-filter-textarea" placeholder="e.g.:
+invert(1)"></textarea>
+      <br />
     </div>
 
     <br />

@@ -7,7 +7,7 @@
   const CSS_TRANSITION_IN = '--blackAndWhiteWeb-filter-transition-in';
   const CSS_TRANSITION_OUT = '--blackAndWhiteWeb-filter-transition-out';
 
-  const DEBUG = false;
+  const DEBUG = true;
   let debug = {
     log: DEBUG ? console.log.bind(console) : () => {} // log or NO_OP
   }
@@ -96,10 +96,23 @@
     return mustEnable;
   }
 
+  function createOverrideCSSFilter(style) {
+    let cssStyle = document.createElement('style');
+    cssStyle.type = 'text/css';
+    let rules = document.createTextNode(".--blackAndWhiteWeb-filter, .--blackAndWhiteWeb-filter :fullscreen{ filter: " + style + " !important }");
+    cssStyle.appendChild(rules);
+    const appendedStyle = document.getElementsByTagName("head")[0].appendChild(cssStyle);
+    return appendedStyle;
+  }
+
   function applySettings(settings) {
     debug.log("[Black&WhiteWeb:CTX] visible HTML!");
     document.documentElement.classList.toggle(CSS_INVISIBLE, false);
     debug.log("[Black&WhiteWeb:CTX] settings", settings);
+    if (settings.useOverrideFilter && settings.overrideFilter) {
+      const appendedStyle = createOverrideCSSFilter(settings.overrideFilter);
+      debug.log("[Black&WhiteWeb:CTX] overrideFilter", appendedStyle);
+    }
     if (settings.alwaysOn) {
       let mustEnable = mustEnableFor(window.location.href);
       toggle(mustEnable, { skipAnimate: true });

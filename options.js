@@ -19,6 +19,8 @@ const whiteListCheckBox = document.querySelector('#whitelist');
 const whiteListTextArea = document.querySelector('#whitelist-textarea');
 const blackListCheckBox = document.querySelector('#blacklist');
 const blackListTextArea = document.querySelector('#blacklist-textarea');
+const overrideFilterCheckBox = document.querySelector('#override-filter');
+const overrideFilterTextArea = document.querySelector('#override-filter-textarea');
 
 // load options that may have previously been saved.
 loadChanges();
@@ -34,6 +36,8 @@ async function saveChanges() {
   const whiteList = whiteListTextArea.value.split('\n');
   const useBlackList = blackListCheckBox.checked;
   const blackList = blackListTextArea.value.split('\n');
+  const useOverrideFilter = overrideFilterCheckBox.checked;
+  const overrideFilter = overrideFilterTextArea.value.trim();
   await storage.set({ 
     alwaysOn: alwaysOn,
     animate: animate,
@@ -41,6 +45,8 @@ async function saveChanges() {
     whiteList: whiteList,
     useBlackList: useBlackList,
     blackList: blackList,
+    useOverrideFilter: useOverrideFilter,
+    overrideFilter: overrideFilter,
   });
   message('Settings saved... Reload pages for changes to take effect!');
 }
@@ -55,6 +61,9 @@ function loadChanges() {
     blackListCheckBox.checked = items?.useBlackList ?? false;
     const blackList = items?.blackList ?? [];
     blackListTextArea.value = blackList.join('\n');
+    overrideFilterCheckBox.checked = items?.useOverrideFilter ?? false;
+    const overrideFilter = items?.overrideFilter ?? '';
+    overrideFilterTextArea.value = overrideFilter.trim();
     message('Settings loaded!');
   });
 }
@@ -68,6 +77,8 @@ async function reset() {
   whiteListTextArea.value = '';
   blackListCheckBox.checked = false;
   blackListTextArea.value = '';
+  overrideFilterCheckBox.checked = false;
+  overrideFilterTextArea.value = '';
 }
 
 let messageClearTimer;

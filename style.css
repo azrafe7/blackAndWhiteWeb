@@ -1,4 +1,4 @@
-.--blackAndWhiteWeb-filter {
+.--blackAndWhiteWeb-filter, .--blackAndWhiteWeb-filter :fullscreen {
   filter:
     contrast(1.02)
     grayscale(1.0)
@@ -6,11 +6,11 @@
     !important;
 }
 
-.--blackAndWhiteWeb-filter-transition-in {
+.--blackAndWhiteWeb-filter-transition-in, .--blackAndWhiteWeb-filter-transition-in :fullscreen {
   transition: filter 1.0s ease-in-out !important;
 }
 
-.--blackAndWhiteWeb-filter-transition-out {
+.--blackAndWhiteWeb-filter-transition-out, .--blackAndWhiteWeb-filter-transition-out :fullscreen {
   transition: filter 0.5s ease-in-out !important;
 }
 
