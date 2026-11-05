@@ -1,6 +1,8 @@
 # Black & White Web
 Browse the Web in Black & White.
 
+Chrome Webstore link: https://chromewebstore.google.com/detail/Black%20%26%20White%20Web/eeghanoecgfjjflojdbjhmdpcdjceldh
+
 ![screenshot](./webstore_assets/screenshot_01.png "Screenshot")
 
 
