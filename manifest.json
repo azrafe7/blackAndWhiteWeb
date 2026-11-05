@@ -3,7 +3,7 @@
   "version": "0.1.6",
   "description": "Browse the Web in Black & White.",
   "manifest_version": 3,
-  "permissions": ["activeTab", "storage"],
+  "permissions": ["storage"],
   "options_page": "options.html",
   "background": {
     "service_worker": "background.js"
