@@ -39,8 +39,8 @@ saturate(1.1)
 
 Subtle OCD:<br>
 `
-blur(0.5px) !important;
-rotate: .4deg;
+blur(0.25px) !important;
+rotate: .12deg;
 `
 
 ### SVG filters (might not work due to CSP)
