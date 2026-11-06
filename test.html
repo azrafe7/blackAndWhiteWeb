@@ -282,20 +282,21 @@
             const filterId = idMatch ? idMatch[1] : 'inline-filter';
 
             // Wrap code inside a full valid SVG namespace string
-            const fullSvg = `<svg xmlns="http://w3.org">${svgContent}</svg>`;
+            const fullSvg = `<svg xmlns="http://www.w3.org/2000/svg">${svgContent}</svg>`;
 
             // Encode using encodeURIComponent and structure the plaintext data URL
             // Note: `#` inside the Data URI needs to be %23, but the fragment ID pointer at the end stays as #id
-            const encodedSvg = encodeURIComponent(fullSvg)
+            let encodedSvg = encodeURIComponent(fullSvg)
                 .replace(/'/g, "%27")
                 .replace(/"/g, "%22");
 
-            const inlineFilterString = `url("data:image/svg+xml;utf8,${encodedSvg}#${filterId}")`;
+            encodedSvg = fullSvg;
+            const inlineFilterString = `url('data:image/svg+xml, ${encodedSvg}#${filterId}')`;
 
             // Clean standard DOM injection container, rewrite input field & update style
             svgContainer.innerHTML = '';
             cssInput.value = inlineFilterString;
-            filteredContent.style.filter = inlineFilterString;
+            updateFilters();
         });
         
         // Handle image uploading locally
@@ -318,7 +319,7 @@
         
         // Set initial test values
         svgInput.value = `<filter id="custom-tint"> 
-  <feColorMatrix type="matrix" values="0.343 0.669 0.119 0 0 0.249 0.626 0.130 0 0 0.172 0.334 0.111 0 0 0 0 0 1 0" /> 
+  <feColorMatrix type="matrix" values="0.643 0.669 0.119 0 0 0.249 0.626 0.130 0 0 0.172 0.334 0.111 0 0 0 0 0 1 0" /> 
 </filter>`;
         cssInput.value = "url(#custom-tint)";
         updateFilters();
