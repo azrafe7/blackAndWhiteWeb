@@ -79,6 +79,23 @@
             font-size: 0.85rem;
         }
 
+        .btn-inline {
+            background-color: #0e639c;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: -5px;
+        }
+
+        .btn-inline:hover {
+            background-color: #1177bb;
+        }
+
         /* Main Workspace Styling */
         .workspace {
             width: 65%;
@@ -184,6 +201,8 @@
             <label for="svg-input"><strong>SVG Filter Code</strong> (Optional)</label>
             <textarea id="svg-input" placeholder="<filter id='my-filter'>&#10;  <feGaussianBlur stdDeviation='5'/>&#10;</filter>"></textarea>
         </div>
+
+        <button type="button" id="btn-test-inline" class="btn-inline">Test Inline</button>
     </div>
 
     <!-- RIGHT MAIN WORKSPACE: Visual Previews -->
@@ -198,7 +217,7 @@
                         <p style="margin-bottom: 15px;">This is standard paragraph text used to see how your filter choice impacts readability.</p>
                         <div class="demo-card">
                             <h3>Component Card</h3>
-                            <button style="padding: 5px 10px; background: #007acc; color: white; border: none; border-radius: 3px; margin-top: 5px;">Placeholder Button</button>
+                            <button style="padding: 5px 10px; background: #007acc; color: white; border: none; border-radius: 3px; margin-top: 5px;">Click Me</button>
                         </div>
                         <div class="demo-gradient">Gradient Placeholder</div>
                         <img class="demo-img original-img" src="sushi.jpg" alt="Test Subject" onerror="this.src='https://unsplash.com';">
@@ -215,7 +234,7 @@
                         <p style="margin-bottom: 15px;">This is standard paragraph text used to see how your filter choice impacts readability.</p>
                         <div class="demo-card">
                             <h3>Component Card</h3>
-                            <button style="padding: 5px 10px; background: #007acc; color: white; border: none; border-radius: 3px; margin-top: 5px;">Placeholder Button</button>
+                            <button style="padding: 5px 10px; background: #007acc; color: white; border: none; border-radius: 3px; margin-top: 5px;">Click Me</button>
                         </div>
                         <div class="demo-gradient">Gradient Placeholder</div>
                         <img class="demo-img filtered-img" src="sushi.jpg" alt="Test Subject" onerror="this.src='https://unsplash.com';">
@@ -225,19 +244,20 @@
         </div>
     </div>
 
-    <!-- Hidden container to safely inject the SVG definitions -->
+    <!-- Hidden container to safely inject the standard SVG definitions -->
     <div id="svg-container" style="position: absolute; width: 0; height: 0; overflow: hidden;"></div>
 
     <script>
         const cssInput = document.getElementById('css-input');
         const svgInput = document.getElementById('svg-input');
+        const btnTestInline = document.getElementById('btn-test-inline');
         const imageLoader = document.getElementById('image-loader');
         const filteredContent = document.getElementById('filtered-content');
         const svgContainer = document.getElementById('svg-container');
-        
+
         const originalImages = document.querySelectorAll('.original-img, .filtered-img');
 
-        // Handle dynamic live updating of filters
+        // Real-time DOM filter update
         function updateFilters() {
             filteredContent.style.filter = cssInput.value;
 
@@ -249,6 +269,35 @@
             }
         }
 
+        // Inline conversion logic (Plaintext Plain SVG Data URI)
+        btnTestInline.addEventListener('click', function() {
+            const svgContent = svgInput.value.trim();
+            if (!svgContent) {
+                alert('Please enter some SVG filter code first.');
+                return;
+            }
+
+            // Extract the id attribute from the filter tag to reference it correctly
+            const idMatch = svgContent.match(/id=["']([^"']+)["']/);
+            const filterId = idMatch ? idMatch[1] : 'inline-filter';
+
+            // Wrap code inside a full valid SVG namespace string
+            const fullSvg = `<svg xmlns="http://w3.org">${svgContent}</svg>`;
+
+            // Encode using encodeURIComponent and structure the plaintext data URL
+            // Note: `#` inside the Data URI needs to be %23, but the fragment ID pointer at the end stays as #id
+            const encodedSvg = encodeURIComponent(fullSvg)
+                .replace(/'/g, "%27")
+                .replace(/"/g, "%22");
+
+            const inlineFilterString = `url("data:image/svg+xml;utf8,${encodedSvg}#${filterId}")`;
+
+            // Clean standard DOM injection container, rewrite input field & update style
+            svgContainer.innerHTML = '';
+            cssInput.value = inlineFilterString;
+            filteredContent.style.filter = inlineFilterString;
+        });
+        
         // Handle image uploading locally
         imageLoader.addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -262,13 +311,16 @@
                 reader.readAsDataURL(file);
             }
         });
-
+        
         // Listen for real-time input changes
         cssInput.addEventListener('input', updateFilters);
         svgInput.addEventListener('input', updateFilters);
-
+        
         // Set initial test values
-        cssInput.value = "contrast(130%) sepia(30%)";
+        svgInput.value = `<filter id="custom-tint"> 
+  <feColorMatrix type="matrix" values="0.343 0.669 0.119 0 0 0.249 0.626 0.130 0 0 0.172 0.334 0.111 0 0 0 0 0 1 0" /> 
+</filter>`;
+        cssInput.value = "url(#custom-tint)";
         updateFilters();
     </script>
 </body>
