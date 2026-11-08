@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS & SVG Filter Tester</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            height: 100vh;
+            background-color: #1e1e1e;
+            color: #f5f5f5;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 35%;
+            background-color: #252526;
+            border-right: 1px solid #3c3c3c;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: #ffffff;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            color: #4fc1ff;
+            margin-bottom: 5px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 0.9rem;
+            color: #cccccc;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            background-color: #1e1e1e;
+            border: 1px solid #3c3c3c;
+            color: #d4d4d4;
+            padding: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            border-radius: 4px;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: 1px solid #0e639c;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 120px;
+        }
+
+        input[type="file"] {
+            color: #ccc;
+            font-size: 0.85rem;
+        }
+
+        .btn-inline {
+            background-color: #0e639c;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: -5px;
+        }
+
+        .btn-inline:hover {
+            background-color: #1177bb;
+        }
+
+        /* Main Workspace Styling */
+        .workspace {
+            width: 65%;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .preview-container {
+            display: flex;
+            flex: 1;
+            height: 100%;
+        }
+
+        .panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel:first-child {
+            border-right: 1px solid #3c3c3c;
+        }
+
+        .panel-header {
+            background-color: #2d2d2d;
+            padding: 10px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #aaaaaa;
+            font-weight: bold;
+        }
+
+        .panel-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #ffffff;
+            color: #333333;
+        }
+
+        /* Test Content Styling */
+        .demo-page {
+            max-width: 100%;
+        }
+
+        .demo-card {
+            background: #f0f2f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .demo-gradient {
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 4px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .demo-img {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            border-radius: 4px;
+            display: block;
+        }
+
+        /* Target element that gets the filter applied */
+        #filtered-content {
+            /* Managed by JS */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LEFT SIDEBAR: Controls -->
+    <div class="sidebar">
+        <div>
+            <h1>Filter Tester</h1>
+            <p style="color: #888; font-size: 0.85rem; margin-top: 5px;">Test standard CSS effects or custom SVG filters in real-time.</p>
+        </div>
+
+        <div class="input-group">
+            <label for="image-loader"><strong>Upload Test Image</strong></label>
+            <input type="file" id="image-loader" accept="image/*">
+        </div>
+
+        <div class="input-group">
+            <label for="css-input"><strong>CSS Filter String</strong></label>
+            <input type="text" id="css-input" placeholder="e.g., blur(5px) grayscale(100%) or url(#my-filter)">
+        </div>
+
+        <div class="input-group">
+            <label for="svg-input"><strong>SVG Filter Code</strong> (Optional)</label>
+            <textarea id="svg-input" placeholder="<filter id='my-filter'>&#10;  <feGaussianBlur stdDeviation='5'/>&#10;</filter>"></textarea>
+        </div>
+
+        <button type="button" id="btn-test-inline" class="btn-inline">Test Inline</button>
+    </div>
+
+    <!-- RIGHT MAIN WORKSPACE: Visual Previews -->
+    <div class="workspace">
+        <div class="preview-container">
+            <!-- Original Version -->
+            <div class="panel">
+                <div class="panel-header">Original (No Filter)</div>
+                <div class="panel-content">
+                    <div class="demo-page">
+                        <h2>Sample Headline</h2>
+                        <p style="margin-bottom: 15px;">This is standard paragraph text used to see how your filter choice impacts readability.</p>
+                        <div class="demo-card">
+                            <h3>Component Card</h3>
+                            <button style="padding: 5px 10px; background: #007acc; color: white; border: none; border-radius: 3px; margin-top: 5px;">Click Me</button>
+                        </div>
+                        <div class="demo-gradient">Gradient Placeholder</div>
+                        <img class="demo-img original-img" src="sushi.jpg" alt="Test Subject" onerror="this.src='https://unsplash.com';">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtered Version -->
+            <div class="panel">
+                <div class="panel-header" style="color: #4fc1ff;">Filtered Preview</div>
+                <div class="panel-content">
+                    <div id="filtered-content" class="demo-page">
+                        <h2>Sample Headline</h2>
+                        <p style="margin-bottom: 15px;">This is standard paragraph text used to see how your filter choice impacts readability.</p>
+                        <div class="demo-card">
+                            <h3>Component Card</h3>
+                            <button style="padding: 5px 10px; background: #007acc; color: white; border: none; border-radius: 3px; margin-top: 5px;">Click Me</button>
+                        </div>
+                        <div class="demo-gradient">Gradient Placeholder</div>
+                        <img class="demo-img filtered-img" src="sushi.jpg" alt="Test Subject" onerror="this.src='https://unsplash.com';">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden container to safely inject the standard SVG definitions -->
+    <div id="svg-container" style="position: absolute; width: 0; height: 0; overflow: hidden;"></div>
+
+    <script>
+        const cssInput = document.getElementById('css-input');
+        const svgInput = document.getElementById('svg-input');
+        const btnTestInline = document.getElementById('btn-test-inline');
+        const imageLoader = document.getElementById('image-loader');
+        const filteredContent = document.getElementById('filtered-content');
+        const svgContainer = document.getElementById('svg-container');
+
+        const originalImages = document.querySelectorAll('.original-img, .filtered-img');
+
+        // Real-time DOM filter update
+        function updateFilters() {
+            filteredContent.style.filter = cssInput.value;
+
+            const svgContent = svgInput.value.trim();
+            if (svgContent) {
+                svgContainer.innerHTML = `<svg xmlns="http://w3.org">${svgContent}</svg>`;
+            } else {
+                svgContainer.innerHTML = '';
+            }
+        }
+
+        // Inline conversion logic (Plaintext Plain SVG Data URI)
+        btnTestInline.addEventListener('click', function() {
+            const svgContent = svgInput.value.trim();
+            if (!svgContent) {
+                alert('Please enter some SVG filter code first.');
+                return;
+            }
+
+            // Extract the id attribute from the filter tag to reference it correctly
+            const idMatch = svgContent.match(/id=["']([^"']+)["']/);
+            const filterId = idMatch ? idMatch[1] : 'inline-filter';
+
+            // Wrap code inside a full valid SVG namespace string
+            const fullSvg = `<svg xmlns="http://www.w3.org/2000/svg">${svgContent}</svg>`;
+
+            // Encode using encodeURIComponent and structure the plaintext data URL
+            // Note: `#` inside the Data URI needs to be %23, but the fragment ID pointer at the end stays as #id
+            let encodedSvg = encodeURIComponent(fullSvg)
+                .replace(/'/g, "%27")
+                .replace(/"/g, "%22");
+
+            encodedSvg = fullSvg;
+            const inlineFilterString = `url('data:image/svg+xml, ${encodedSvg}#${filterId}')`;
+
+            // Clean standard DOM injection container, rewrite input field & update style
+            svgContainer.innerHTML = '';
+            cssInput.value = inlineFilterString;
+            updateFilters();
+        });
+        
+        // Handle image uploading locally
+        imageLoader.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    originalImages.forEach(img => {
+                        img.src = event.target.result;
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Listen for real-time input changes
+        cssInput.addEventListener('input', updateFilters);
+        svgInput.addEventListener('input', updateFilters);
+        
+        // Set initial test values
+        svgInput.value = `<filter id="custom-tint"> 
+  <feColorMatrix type="matrix" values="0.643 0.669 0.119 0 0 0.249 0.626 0.130 0 0 0.172 0.334 0.111 0 0 0 0 0 1 0" /> 
+</filter>`;
+        cssInput.value = "url(#custom-tint)";
+        updateFilters();
+    </script>
+</body>
+</html>
