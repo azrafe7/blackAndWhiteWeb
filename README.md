@@ -12,9 +12,10 @@ Click on the extension icon to turn any web page into Black & White.
 Now you can also black list or white list urls in combination with Always ON option.
 Should work for fullscreen videos too!
 
-Since v0.1.2 new options page added:
+And more:
  - turn the extension always ON (also good for pranks :P )
  - show animated transition
+ - advanced settings for custom filters
 
 
 REPO: https://github.com/azrafe7/blackAndWhiteWeb
@@ -53,3 +54,5 @@ Pixelated (https://neddev.com/en/lab/components/pixelate-svg-filter/):<br>
 
 Posterize (https://tympanus.net/codrops/2019/01/29/svg-filter-effects-poster-image-effect-with-fecomponenttransfer/):<br>
 `url('data:image/svg+xml, <svg xmlns="http://www.w3.org/2000/svg"> <filter id="posterize"> <feComponentTransfer> <feFuncR type="discrete" tableValues="0 .5 1"/> </feComponentTransfer> </filter> </svg>#posterize`
+
+Glitch & others (https://www.svggenie.com/blog/advanced-svg-filters-glassmorphism-glitch)
