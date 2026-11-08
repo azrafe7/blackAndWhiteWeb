@@ -6,6 +6,7 @@
   const CSS_INVISIBLE = '--blackAndWhiteWeb-invisible';
   const CSS_TRANSITION_IN = '--blackAndWhiteWeb-filter-transition-in';
   const CSS_TRANSITION_OUT = '--blackAndWhiteWeb-filter-transition-out';
+  const SVG_CONTAINER = 'blackAndWhiteWeb-svg-container';
 
   const DEBUG = true;
   let debug = {
@@ -105,10 +106,33 @@
     return appendedStyle;
   }
 
+  function injectSVGFilter(svgFilter) {
+    let svgContainer = document.getElementById(SVG_CONTAINER);
+    if (!svgContainer) {
+      svgContainer = document.createElement("div");
+      document.documentElement.appendChild(svgContainer);
+    }
+    svgContainer.id = SVG_CONTAINER;
+    svgContainer.style = "position: absolute; width: 0; height: 0; overflow: hidden;";
+    
+    const svgContent = svgFilter.trim();
+    if (svgContent) {
+      svgContainer.innerHTML = `<svg xmlns="http://w3.org">${svgContent}</svg>`;
+    } else {
+      svgContainer.innerHTML = '';
+    }
+
+    return svgContainer;
+  }
+
   function applySettings(settings) {
     debug.log("[Black&WhiteWeb:CTX] visible HTML!");
     document.documentElement.classList.toggle(CSS_INVISIBLE, false);
     debug.log("[Black&WhiteWeb:CTX] settings", settings);
+    if (settings.useSVGFilter && settings.svgFilter) {
+      const svgContainer = injectSVGFilter(settings.svgFilter);
+      debug.log("[Black&WhiteWeb:CTX] svgFilter", svgContainer);
+    }
     if (settings.useOverrideFilter && settings.overrideFilter) {
       const appendedStyle = createOverrideCSSFilter(settings.overrideFilter);
       debug.log("[Black&WhiteWeb:CTX] overrideFilter", appendedStyle);

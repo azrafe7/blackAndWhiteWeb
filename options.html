@@ -33,6 +33,14 @@
         min-width: 350px;
         min-height: 5em;
       }
+      
+      #filter_tester_link {
+        font-size: .8em;
+      }
+      .checkboxes textarea {
+        margin-bottom: 5px;
+        margin-top: 2px;
+      }
     </style>
   </head>
 
@@ -67,14 +75,29 @@ mail.google.com"></textarea>
       </div>
 
       <br />
-      <input type="checkbox" id="override-filter" />
-      <label for="override-filter" title="Override default CSS filter">⚠️ CSS Filter Override</label>
-      <br />
-      <textarea id="override-filter-textarea" placeholder="e.g.:
-invert(1)"></textarea>
-      <br />
-    </div>
+      <details>
+        <summary>⚠️ Advanced Settings</summary>
+        <br />
+        <input type="checkbox" id="override-filter" />
+        <label for="override-filter" title="Override default CSS filter">⚠️ CSS Filter Override</label>
+        <br />
+        <textarea id="override-filter-textarea" placeholder="e.g.:
+  invert(1)"></textarea>
+        <br />
+        <input type="checkbox" id="svg-filter" />
+        <label for="svg-filter" title="Inject SVG filter">⚠️ Inject SVG Filter</label>
+        <br />
+        <textarea id="svg-filter-textarea" placeholder="e.g.:
+  <filter id='my-filter'>
+    <feGaussianBlur stdDeviation='5'/>
+  </filter>"></textarea>
+        <br />
+        <div id="filter_tester_link">
+          <a href="https://azrafe7.github.io/filter_tester/filter_tester.html" target="_blank">Open external filter tester page</a>
+        </div>
+      </details>
 
+    </div>
     <br />
     <button class="submit">Save</button>
     <button class="reset">Reset</button>

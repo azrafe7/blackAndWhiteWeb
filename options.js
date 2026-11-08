@@ -21,6 +21,8 @@ const blackListCheckBox = document.querySelector('#blacklist');
 const blackListTextArea = document.querySelector('#blacklist-textarea');
 const overrideFilterCheckBox = document.querySelector('#override-filter');
 const overrideFilterTextArea = document.querySelector('#override-filter-textarea');
+const svgFilterCheckBox = document.querySelector('#svg-filter');
+const svgFilterTextArea = document.querySelector('#svg-filter-textarea');
 
 // load options that may have previously been saved.
 loadChanges();
@@ -38,6 +40,8 @@ async function saveChanges() {
   const blackList = blackListTextArea.value.split('\n');
   const useOverrideFilter = overrideFilterCheckBox.checked;
   const overrideFilter = overrideFilterTextArea.value.trim();
+  const useSVGFilter = svgFilterCheckBox.checked;
+  const svgFilter = svgFilterTextArea.value.trim();
   await storage.set({ 
     alwaysOn: alwaysOn,
     animate: animate,
@@ -47,6 +51,8 @@ async function saveChanges() {
     blackList: blackList,
     useOverrideFilter: useOverrideFilter,
     overrideFilter: overrideFilter,
+    useSVGFilter: useSVGFilter,
+    svgFilter: svgFilter,
   });
   message('Settings saved... Reload pages for changes to take effect!');
 }
@@ -64,6 +70,9 @@ function loadChanges() {
     overrideFilterCheckBox.checked = items?.useOverrideFilter ?? false;
     const overrideFilter = items?.overrideFilter ?? '';
     overrideFilterTextArea.value = overrideFilter.trim();
+    svgFilterCheckBox.checked = items?.useSVGFilter ?? false;
+    const svgFilter = items?.svgFilter ?? '';
+    svgFilterTextArea.value = svgFilter.trim();
     message('Settings loaded!');
   });
 }
@@ -79,6 +88,8 @@ async function reset() {
   blackListTextArea.value = '';
   overrideFilterCheckBox.checked = false;
   overrideFilterTextArea.value = '';
+  svgFilterCheckBox.checked = false;
+  svgFilterTextArea.value = '';
 }
 
 let messageClearTimer;
