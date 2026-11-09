@@ -123,6 +123,45 @@ function clearWarning(p) {
 
 function clearAllWarnings() {
   optionPairs.forEach(clearWarning);
+  clearAlwaysOnWarning();
+}
+
+// Inline warning under the "always on" checkbox, for when a whitelist/blacklist is enabled
+// but "always on" itself is not.
+const alwaysOnWarning = {
+  warned: false,
+  el: document.createElement('div'),
+};
+alwaysOnWarning.el.setAttribute('role', 'alert');
+alwaysOnWarning.el.style.cssText = 'display:none; color:#b45309; font-size:0.9em; margin:4px 0;';
+alwaysOnCheckBox.parentElement.querySelector('label').insertAdjacentElement('afterend', alwaysOnWarning.el);
+
+// The warning becomes obsolete if the user touches any of the three checkboxes involved.
+[alwaysOnCheckBox, whiteListCheckBox, blackListCheckBox].forEach(cb =>
+  cb.addEventListener('change', clearAlwaysOnWarning));
+
+// Names of the enabled lists if "always on" is off, otherwise an empty array.
+function listsWithoutAlwaysOn(state) {
+  if (state.alwaysOn) return [];
+  const names = [];
+  if (state.useWhiteList) names.push('whitelist');
+  if (state.useBlackList) names.push('blacklist');
+  return names;
+}
+
+function showAlwaysOnWarning(names) {
+  alwaysOnWarning.warned = true;
+  alwaysOnWarning.el.textContent =
+    `The ${names.join(' and ')} ${names.length > 1 ? 'are' : 'is'} enabled, but "always on" is not ticked. ` +
+    `Tick it, or click Save again to save anyway.`;
+  alwaysOnWarning.el.style.display = 'block';
+  alwaysOnCheckBox.style.outline = '2px solid #d97706';
+}
+
+function clearAlwaysOnWarning() {
+  alwaysOnWarning.warned = false;
+  alwaysOnWarning.el.style.display = 'none';
+  alwaysOnCheckBox.style.outline = '';
 }
 
 // Find textareas that were edited since the last save/load (and are not empty)
@@ -144,10 +183,16 @@ async function saveChanges() {
   // If the user clicks Save again without touching those fields, the warning has already
   // been seen (p.warned), so we go ahead and save anyway.
   const disabledEdits = findDisabledEdits(state);
-  if (disabledEdits.some(p => !p.warned)) {
+  const alwaysOnNames = listsWithoutAlwaysOn(state);
+  const hasUnseenWarning =
+    disabledEdits.some(p => !p.warned) ||
+    (alwaysOnNames.length > 0 && !alwaysOnWarning.warned);
+  if (hasUnseenWarning) {
     disabledEdits.forEach(showWarning);
-    disabledEdits[0].checkBox.focus(); // take the user straight to the checkbox they probably forgot
-    message('Not saved yet: see the warning(s) below. Click Save again to save anyway.');
+    if (alwaysOnNames.length > 0) showAlwaysOnWarning(alwaysOnNames);
+    // take the user straight to the checkbox they probably forgot
+    (alwaysOnNames.length > 0 ? alwaysOnCheckBox : disabledEdits[0].checkBox).focus();
+    message('Not saved yet: see the warning(s) on the page. Click Save again to save anyway.');
     return;
   }
 
