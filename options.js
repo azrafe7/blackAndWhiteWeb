@@ -152,7 +152,7 @@ function listsWithoutAlwaysOn(state) {
 function showAlwaysOnWarning(names) {
   alwaysOnWarning.warned = true;
   alwaysOnWarning.el.textContent =
-    `The ${names.join(' and ')} ${names.length > 1 ? 'are' : 'is'} enabled, but "always on" is not ticked. ` +
+    `The ${names.join(' and ')} ${names.length > 1 ? 'are' : 'is'} enabled, but "always ON" is not ticked. ` +
     `Tick it, or click Save again to save anyway.`;
   alwaysOnWarning.el.style.display = 'block';
   alwaysOnCheckBox.style.outline = '2px solid #d97706';
