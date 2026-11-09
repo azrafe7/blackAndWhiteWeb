@@ -41,6 +41,18 @@
         margin-bottom: 5px;
         margin-top: 2px;
       }
+
+      button {
+        margin-top: 5px;
+      }
+      
+      input[type=checkbox], label, summary, button {
+        cursor: pointer;
+      }
+      
+      .underlined {
+        text-decoration: underline;
+      }
     </style>
   </head>
 
@@ -59,14 +71,14 @@
       
       <div id="lists">
         <input type="checkbox" id="whitelist" />
-        <label for="whitelist" title="Only activate extension on urls containing this text">Always ON &bull; White List</label>
+        <label for="whitelist" title="When Always ON, only auto-start the extension on urls containing this text"><span class="underlined">Always ON</span> &bull; White List</label>
         <br />
         <textarea id="whitelist-textarea" placeholder="e.g.:
 youtube.com
 news.ycombinator.com"></textarea>
         <br />
         <input type="checkbox" id="blacklist" />
-        <label for="blacklist" title="Disactivate extension on urls containing this text">Always ON &bull; Black List</label>
+        <label for="blacklist" title="When Always ON, don't auto-start the extension on urls containing this text"><span class="underlined">Always ON</span> &bull; Black List</label>
         <br />
         <textarea id="blacklist-textarea" placeholder="e.g.:
 stackoverflow.com
@@ -82,15 +94,15 @@ mail.google.com"></textarea>
         <label for="override-filter" title="Override default CSS filter">⚠️ CSS Filter Override</label>
         <br />
         <textarea id="override-filter-textarea" placeholder="e.g.:
-  invert(1)"></textarea>
+invert(1)"></textarea>
         <br />
         <input type="checkbox" id="svg-filter" />
         <label for="svg-filter" title="Inject SVG filter">⚠️ Inject SVG Filter</label>
         <br />
         <textarea id="svg-filter-textarea" placeholder="e.g.:
-  <filter id='my-filter'>
-    <feGaussianBlur stdDeviation='5'/>
-  </filter>"></textarea>
+<filter id='my-filter'>
+  <feGaussianBlur stdDeviation='5'/>
+</filter>"></textarea>
         <br />
         <div id="filter_tester_link">
           <a href="https://azrafe7.github.io/filter_tester/filter_tester.html" target="_blank">Open external filter tester page</a>
@@ -99,9 +111,10 @@ mail.google.com"></textarea>
 
     </div>
     <br />
-    <button class="submit">Save</button>
-    <button class="reset">Reset</button>
-    <button class="reload">Reload</button>
+    <button class="submit" title="Save settings">Save</button>
+    <button class="reset" title="Reset settings to defaults">Reset</button>
+    <button class="reload" title="Reload last saved settings">Reload</button>
+    <!--button class="check">Check</button-->
 
     <script src="options.js"></script>
   </body>
