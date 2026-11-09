@@ -106,6 +106,41 @@ for (const p of optionPairs) {
   p.checkBox.addEventListener('change', () => clearWarning(p));
 }
 
+// Add a small "Use placeholder text" button to the top right of every textarea
+// that has a placeholder. Each textarea is wrapped in a relatively-positioned container
+// so the button can sit on top of it. (Done after the warnings above are inserted, so those
+// stay below the wrapper, not inside it.)
+document.querySelectorAll('textarea[placeholder]').forEach(function (textArea) {
+  // Placeholders often start with an "e.g.:" header line; it's a hint, not content, so drop it.
+  const placeholder = textArea.getAttribute('placeholder').replace(/^\s*e\.g\.:?[ \t]*\r?\n/i, '');
+  if (!placeholder.trim()) return;
+
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'position:relative; display:inline-block; max-width:100%;';
+  textArea.parentNode.insertBefore(wrapper, textArea);
+  wrapper.appendChild(textArea);
+  textArea.style.verticalAlign = 'top'; // avoids the small gap inline textareas leave underneath
+
+  const button = document.createElement('button');
+  button.type = 'button'; // never submit a surrounding form
+  button.textContent = 'Use placeholder text';
+  button.title = placeholder;
+  button.style.cssText =
+    'position:absolute; right:2px; top:0px; padding:1px 6px; font-size:0.75em; opacity:0.8; cursor:pointer;';
+  wrapper.appendChild(button);
+
+  button.addEventListener('click', function () {
+    const current = textArea.value;
+    textArea.value = placeholder;
+    const matchingCheckBox = optionPairs.find((entry) => entry.textArea == textArea).checkBox;
+    matchingCheckBox.checked = true;
+    // Programmatic changes don't fire events, so dispatch 'input' to update the
+    // unsaved-changes indicator and clear any inline warning for this textarea.
+    textArea.dispatchEvent(new Event('input', { bubbles: true }));
+    textArea.focus();
+  });
+});
+
 function showWarning(p) {
   p.warned = true;
   p.warningEl.textContent =
