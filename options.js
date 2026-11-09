@@ -24,37 +24,76 @@ const overrideFilterTextArea = document.querySelector('#override-filter-textarea
 const svgFilterCheckBox = document.querySelector('#svg-filter');
 const svgFilterTextArea = document.querySelector('#svg-filter-textarea');
 
+// Snapshot (as a JSON string) of the form as it was last saved or loaded.
+// Comparing the current form against this tells us if there are unsaved changes.
+let savedSnapshot = null;
+
+// Read the current state of every control into a plain object.
+// Used both for saving and for detecting unsaved changes, so the two can never disagree.
+function getFormState() {
+  return {
+    alwaysOn: alwaysOnCheckBox.checked,
+    animate: animateCheckBox.checked,
+    useWhiteList: whiteListCheckBox.checked,
+    whiteList: whiteListTextArea.value.split('\n'),
+    useBlackList: blackListCheckBox.checked,
+    blackList: blackListTextArea.value.split('\n'),
+    useOverrideFilter: overrideFilterCheckBox.checked,
+    overrideFilter: overrideFilterTextArea.value.trim(),
+    useSVGFilter: svgFilterCheckBox.checked,
+    svgFilter: svgFilterTextArea.value.trim(),
+  };
+}
+
+function hasUnsavedChanges() {
+  // savedSnapshot is null until the initial load finishes; don't warn before that.
+  return savedSnapshot !== null && JSON.stringify(getFormState()) !== savedSnapshot;
+}
+
+// Show a "*" in the tab title while there are unsaved changes.
+function updateDirtyIndicator() {
+  const base = document.title.replace(/^\* /, '');
+  document.title = hasUnsavedChanges() ? '* ' + base : base;
+}
+
+// Any edit to any control re-evaluates the dirty state
+// ('input' covers typing, 'change' covers checkboxes).
+document.addEventListener('input', updateDirtyIndicator);
+document.addEventListener('change', updateDirtyIndicator);
+
+// Warn when leaving the page (closing the tab, navigating away, refreshing)
+// with unsaved changes. Browsers ignore custom text and show their own generic prompt.
+window.addEventListener('beforeunload', function (event) {
+  if (hasUnsavedChanges()) {
+    event.preventDefault();
+    event.returnValue = ''; // required by Chrome to trigger the prompt
+  }
+});
+
 // load options that may have previously been saved.
 loadChanges();
 
 submitButton.addEventListener('click', saveChanges);
 resetButton.addEventListener('click', reset);
-reloadButton.addEventListener('click', loadChanges);
+reloadButton.addEventListener('click', onReloadClick);
 
 async function saveChanges() {
-  const alwaysOn = alwaysOnCheckBox.checked;
-  const animate = animateCheckBox.checked;
-  const useWhiteList = whiteListCheckBox.checked;
-  const whiteList = whiteListTextArea.value.split('\n');
-  const useBlackList = blackListCheckBox.checked;
-  const blackList = blackListTextArea.value.split('\n');
-  const useOverrideFilter = overrideFilterCheckBox.checked;
-  const overrideFilter = overrideFilterTextArea.value.trim();
-  const useSVGFilter = svgFilterCheckBox.checked;
-  const svgFilter = svgFilterTextArea.value.trim();
-  await storage.set({ 
-    alwaysOn: alwaysOn,
-    animate: animate,
-    useWhiteList: useWhiteList,
-    whiteList: whiteList,
-    useBlackList: useBlackList,
-    blackList: blackList,
-    useOverrideFilter: useOverrideFilter,
-    overrideFilter: overrideFilter,
-    useSVGFilter: useSVGFilter,
-    svgFilter: svgFilter,
-  });
+  const state = getFormState();
+  await storage.set(state);
+  // Only update the snapshot after the write succeeded; if set() throws,
+  // the form stays marked as unsaved.
+  savedSnapshot = JSON.stringify(state);
+  updateDirtyIndicator();
   message('Settings saved... Reload pages for changes to take effect!');
+}
+
+// "Reload" throws away whatever is in the form, so confirm first if there are edits.
+function onReloadClick() {
+  if (hasUnsavedChanges() &&
+      !confirm('You have unsaved changes. Reload the saved settings and discard them?')) {
+    return;
+  }
+  loadChanges();
 }
 
 function loadChanges() {
@@ -73,6 +112,11 @@ function loadChanges() {
     svgFilterCheckBox.checked = items?.useSVGFilter ?? false;
     const svgFilter = items?.svgFilter ?? '';
     svgFilterTextArea.value = svgFilter.trim();
+
+    // Take the snapshot from the controls (not from `items`) so that any
+    // normalization above (trim, join/split) doesn't cause false "dirty" results.
+    savedSnapshot = JSON.stringify(getFormState());
+    updateDirtyIndicator();
     message('Settings loaded!');
   });
 }
@@ -90,6 +134,9 @@ async function reset() {
   overrideFilterTextArea.value = '';
   svgFilterCheckBox.checked = false;
   svgFilterTextArea.value = '';
+  // Programmatic changes don't fire input/change events, so refresh manually.
+  // Reset is not saved, so this correctly counts as an unsaved change.
+  updateDirtyIndicator();
 }
 
 let messageClearTimer;
