@@ -28,6 +28,12 @@ const svgFilterTextArea = document.querySelector('#svg-filter-textarea');
 // Comparing the current form against this tells us if there are unsaved changes.
 let savedSnapshot = null;
 
+// Turn a textarea's content into a clean list: one entry per line,
+// surrounding whitespace removed, blank lines dropped.
+function parseList(text) {
+  return text.split('\n').map(line => line.trim()).filter(line => line !== '');
+}
+
 // Read the current state of every control into a plain object.
 // Used both for saving and for detecting unsaved changes, so the two can never disagree.
 function getFormState() {
@@ -35,9 +41,9 @@ function getFormState() {
     alwaysOn: alwaysOnCheckBox.checked,
     animate: animateCheckBox.checked,
     useWhiteList: whiteListCheckBox.checked,
-    whiteList: whiteListTextArea.value.split('\n'),
+    whiteList: parseList(whiteListTextArea.value),
     useBlackList: blackListCheckBox.checked,
-    blackList: blackListTextArea.value.split('\n'),
+    blackList: parseList(blackListTextArea.value),
     useOverrideFilter: overrideFilterCheckBox.checked,
     overrideFilter: overrideFilterTextArea.value.trim(),
     useSVGFilter: svgFilterCheckBox.checked,
@@ -80,6 +86,9 @@ reloadButton.addEventListener('click', onReloadClick);
 async function saveChanges() {
   const state = getFormState();
   await storage.set(state);
+  // Show the user what was actually saved (trimmed, blank lines removed).
+  whiteListTextArea.value = state.whiteList.join('\n');
+  blackListTextArea.value = state.blackList.join('\n');
   // Only update the snapshot after the write succeeded; if set() throws,
   // the form stays marked as unsaved.
   savedSnapshot = JSON.stringify(state);
