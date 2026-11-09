@@ -91,6 +91,40 @@ const optionPairs = [
   { name: 'SVG filter',      checkBox: svgFilterCheckBox,      textArea: svgFilterTextArea,      key: 'svgFilter',      enabledKey: 'useSVGFilter' },
 ];
 
+// Create an (initially hidden) inline warning under each textarea.
+// Built here so no HTML changes are needed. Note: loadChanges() is called earlier in the
+// file, but its storage callback only runs after the script has finished, so this is defined by then.
+for (const p of optionPairs) {
+  p.warned = false;
+  p.warningEl = document.createElement('div');
+  p.warningEl.setAttribute('role', 'alert');
+  p.warningEl.style.cssText = 'display:none; color:#b45309; font-size:0.9em; margin:4px 0;';
+  p.textArea.insertAdjacentElement('afterend', p.warningEl);
+
+  // Editing the textarea or toggling its checkbox makes the warning obsolete.
+  p.textArea.addEventListener('input', () => clearWarning(p));
+  p.checkBox.addEventListener('change', () => clearWarning(p));
+}
+
+function showWarning(p) {
+  p.warned = true;
+  p.warningEl.textContent =
+    `You changed the ${p.name} text, but its checkbox is not ticked, so it will be saved ` +
+    `but have NO effect. Tick the checkbox, or click Save again to save anyway.`;
+  p.warningEl.style.display = 'block';
+  p.checkBox.style.outline = '2px solid #d97706'; // highlight the checkbox that needs ticking
+}
+
+function clearWarning(p) {
+  p.warned = false;
+  p.warningEl.style.display = 'none';
+  p.checkBox.style.outline = '';
+}
+
+function clearAllWarnings() {
+  optionPairs.forEach(clearWarning);
+}
+
 // Find textareas that were edited since the last save/load (and are not empty)
 // whose checkbox is still off, meaning the edit would have no effect.
 // Content that was already saved with its checkbox off is intentional, so it is not flagged.
@@ -106,19 +140,15 @@ function findDisabledEdits(state) {
 async function saveChanges() {
   const state = getFormState();
 
+  // First Save click with an edited-but-disabled textarea: show inline warnings and stop.
+  // If the user clicks Save again without touching those fields, the warning has already
+  // been seen (p.warned), so we go ahead and save anyway.
   const disabledEdits = findDisabledEdits(state);
-  if (disabledEdits.length > 0) {
-    const names = disabledEdits.map(p => `"${p.name}"`).join(', ');
-    const proceed = confirm(
-      `You edited the ${names} text but the matching "enable" checkbox is not ticked, ` +
-      `so ${disabledEdits.length > 1 ? 'those settings' : 'that setting'} will be saved but have NO effect.\n\n` +
-      `OK = save anyway\nCancel = go back and tick the checkbox`
-    );
-    if (!proceed) {
-      disabledEdits[0].checkBox.focus(); // take the user straight to the checkbox they probably forgot
-      message('Not saved: enable the checkbox for your edited ' + names + '.');
-      return;
-    }
+  if (disabledEdits.some(p => !p.warned)) {
+    disabledEdits.forEach(showWarning);
+    disabledEdits[0].checkBox.focus(); // take the user straight to the checkbox they probably forgot
+    message('Not saved yet: see the warning(s) below. Click Save again to save anyway.');
+    return;
   }
 
   await storage.set(state);
@@ -128,6 +158,7 @@ async function saveChanges() {
   // Only update the snapshot after the write succeeded; if set() throws,
   // the form stays marked as unsaved.
   savedSnapshot = JSON.stringify(state);
+  clearAllWarnings();
   updateDirtyIndicator();
   message('Settings saved... Reload pages for changes to take effect!');
 }
@@ -161,6 +192,7 @@ function loadChanges() {
     // Take the snapshot from the controls (not from `items`) so that any
     // normalization above (trim, join/split) doesn't cause false "dirty" results.
     savedSnapshot = JSON.stringify(getFormState());
+    clearAllWarnings();
     updateDirtyIndicator();
     message('Settings loaded!');
   });
@@ -179,6 +211,7 @@ async function reset() {
   overrideFilterTextArea.value = '';
   svgFilterCheckBox.checked = false;
   svgFilterTextArea.value = '';
+  clearAllWarnings(); // everything is empty/unchecked now, so no warning applies
   // Programmatic changes don't fire input/change events, so refresh manually.
   // Reset is not saved, so this correctly counts as an unsaved change.
   updateDirtyIndicator();
