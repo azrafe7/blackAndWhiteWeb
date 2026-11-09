@@ -83,8 +83,44 @@ submitButton.addEventListener('click', saveChanges);
 resetButton.addEventListener('click', reset);
 reloadButton.addEventListener('click', onReloadClick);
 
+// Each textarea and the checkbox that activates it, with a human-readable name for warnings.
+const optionPairs = [
+  { name: 'whitelist',       checkBox: whiteListCheckBox,      textArea: whiteListTextArea,      key: 'whiteList',      enabledKey: 'useWhiteList' },
+  { name: 'blacklist',       checkBox: blackListCheckBox,      textArea: blackListTextArea,      key: 'blackList',      enabledKey: 'useBlackList' },
+  { name: 'override filter', checkBox: overrideFilterCheckBox, textArea: overrideFilterTextArea, key: 'overrideFilter', enabledKey: 'useOverrideFilter' },
+  { name: 'SVG filter',      checkBox: svgFilterCheckBox,      textArea: svgFilterTextArea,      key: 'svgFilter',      enabledKey: 'useSVGFilter' },
+];
+
+// Find textareas that were edited since the last save/load (and are not empty)
+// whose checkbox is still off, meaning the edit would have no effect.
+// Content that was already saved with its checkbox off is intentional, so it is not flagged.
+function findDisabledEdits(state) {
+  const saved = JSON.parse(savedSnapshot);
+  return optionPairs.filter(p =>
+    !state[p.enabledKey] &&
+    JSON.stringify(state[p.key]) !== JSON.stringify(saved[p.key]) &&
+    p.textArea.value.trim() !== ''
+  );
+}
+
 async function saveChanges() {
   const state = getFormState();
+
+  const disabledEdits = findDisabledEdits(state);
+  if (disabledEdits.length > 0) {
+    const names = disabledEdits.map(p => `"${p.name}"`).join(', ');
+    const proceed = confirm(
+      `You edited the ${names} text but the matching "enable" checkbox is not ticked, ` +
+      `so ${disabledEdits.length > 1 ? 'those settings' : 'that setting'} will be saved but have NO effect.\n\n` +
+      `OK = save anyway\nCancel = go back and tick the checkbox`
+    );
+    if (!proceed) {
+      disabledEdits[0].checkBox.focus(); // take the user straight to the checkbox they probably forgot
+      message('Not saved: enable the checkbox for your edited ' + names + '.');
+      return;
+    }
+  }
+
   await storage.set(state);
   // Show the user what was actually saved (trimmed, blank lines removed).
   whiteListTextArea.value = state.whiteList.join('\n');
