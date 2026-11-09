@@ -138,7 +138,7 @@ document.querySelectorAll('textarea[placeholder]').forEach(function (textArea) {
     if (textArea == svgFilterTextArea) {
       overrideFilterCheckBox.checked = true;
       let cssFilter = overrideFilterTextArea.value.replace(/\n*url\(#my-filter\)/g, '');
-      overrideFilterTextArea.value = cssFilter.trim() + '\nurl\(#my-filter)';
+      overrideFilterTextArea.value = (cssFilter.trim() + '\nurl\(#my-filter)').trim();
     }
     // Programmatic changes don't fire events, so dispatch 'input' to update the
     // unsaved-changes indicator and clear any inline warning for this textarea.
