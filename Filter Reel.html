@@ -1,0 +1,497 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Filter Reel</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  /* Layout: a letterboxed 2.39:1 screen on the left, a control rack on the right, generated code under the screen. */
+  :root {
+    --ink: #0e1013;
+    --panel: #161a1f;
+    --line: #2a3038;
+    --text: #e8e4da;
+    --muted: #8d939c;
+    --lamp: #ff9a3c;
+    --lamp-ink: #1a1006;
+    --font-display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+    --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--ink);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 28px 48px;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 24px; }
+  header h1 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(2.6rem, 7vw, 4.4rem);
+    line-height: .9;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+    text-wrap: balance;
+  }
+  header h1 span { color: var(--lamp); }
+  header p { margin: 0; color: var(--muted); max-width: 62ch; }
+
+  .layout {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "stage" "ctrl" "code";
+  }
+  @media (min-width: 940px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 340px;
+      grid-template-areas: "stage ctrl" "code ctrl";
+      align-items: start;
+    }
+  }
+  .stage-col { grid-area: stage; display: grid; gap: 10px; min-width: 0; }
+  .ctrl { grid-area: ctrl; min-width: 0; display: grid; gap: 22px; background: var(--panel); border: 1px solid var(--line); padding: 18px; }
+  .code-col { grid-area: code; min-width: 0; display: grid; gap: 10px; }
+
+  .frame { position: relative; overflow: hidden; background: #000; aspect-ratio: 2.39 / 1; width: 100%; border: 1px solid var(--line); }
+  .stage { width: 100%; height: 100%; }
+  .stage svg { display: block; width: 100%; height: 100%; }
+  .scene-title { font-family: var(--font-display); font-weight: 900; }
+  .scene-sub { font-family: var(--font-mono); }
+  .readout { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); }
+  .readout b { color: var(--lamp); font-weight: 500; }
+
+  .label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 9px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { position: relative; }
+  .chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .chip span { display: block; padding: 6px 11px; border: 1px solid var(--line); border-radius: 3px; font-size: 13.5px; background: var(--ink); color: var(--text); }
+  .chip input:checked + span { background: var(--lamp); border-color: var(--lamp); color: var(--lamp-ink); font-weight: 600; }
+  .chip input:focus-visible + span { outline: 2px solid var(--text); outline-offset: 2px; }
+  .chip:hover input:not(:checked) + span { border-color: var(--muted); }
+
+  .tune { display: grid; gap: 14px; }
+  .row { display: grid; gap: 5px; }
+  .row .top { display: flex; justify-content: space-between; align-items: baseline; font-size: 13.5px; }
+  .row output { font-family: var(--font-mono); font-size: 12px; color: var(--lamp); font-variant-numeric: tabular-nums; }
+  input[type=range] { width: 100%; accent-color: var(--lamp); }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .pair label { display: flex; align-items: center; gap: 8px; font-size: 13.5px; }
+  input[type=color] { width: 40px; height: 28px; padding: 0; border: 1px solid var(--line); background: var(--ink); cursor: pointer; }
+  .hint { font-size: 13px; color: var(--muted); margin: 0; }
+  .check { display: flex; gap: 9px; align-items: flex-start; font-size: 13.5px; }
+  .check input { margin-top: 3px; accent-color: var(--lamp); }
+  .check small { display: block; color: var(--muted); font-size: 12px; }
+
+  button { font: inherit; font-size: 13px; color: var(--text); background: var(--ink); border: 1px solid var(--line); border-radius: 3px; padding: 6px 12px; cursor: pointer; justify-self: start; }
+  button:hover { border-color: var(--muted); }
+  button:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+  button.primary { background: var(--lamp); color: var(--lamp-ink); border-color: var(--lamp); font-weight: 600; }
+
+  .code-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  pre#code { margin: 0; padding: 14px 16px; background: var(--panel); border: 1px solid var(--line); font-family: var(--font-mono); font-size: 12px; line-height: 1.55; overflow-x: auto; max-height: 420px; overflow-y: auto; color: var(--text); }
+  .note { font-size: 12.5px; color: var(--muted); margin: 0; }
+</style>
+
+<!-- Filter definitions. Everything the demo does is a filter declared here. -->
+<svg id="defs" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="duotone" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values=".33 .33 .33 0 0  .33 .33 .33 0 0  .33 .33 .33 0 0  0 0 0 1 0"/>
+    <feComponentTransfer>
+      <feFuncR type="table" tableValues=".05 1"/>
+      <feFuncG type="table" tableValues=".07 .8"/>
+      <feFuncB type="table" tableValues=".25 .5"/>
+    </feComponentTransfer>
+  </filter>
+
+  <filter id="grade" color-interpolation-filters="sRGB">
+    <feComponentTransfer>
+      <feFuncR type="table" tableValues=".02 .45 1"/>
+      <feFuncG type="table" tableValues=".08 .5 .92"/>
+      <feFuncB type="table" tableValues=".22 .5 .78"/>
+    </feComponentTransfer>
+  </filter>
+
+  <filter id="silhouette" color-interpolation-filters="sRGB">
+    <feGaussianBlur stdDeviation=".6"/>
+    <feColorMatrix type="matrix" values=".2126 .7152 .0722 0 0  .2126 .7152 .0722 0 0  .2126 .7152 .0722 0 0  0 0 0 1 0"/>
+    <feComponentTransfer>
+      <feFuncR id="silR" type="discrete" tableValues="0 1"/>
+      <feFuncG id="silG" type="discrete" tableValues="0 1"/>
+      <feFuncB id="silB" type="discrete" tableValues="0 1"/>
+    </feComponentTransfer>
+  </filter>
+
+  <filter id="bloom" color-interpolation-filters="sRGB">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b"/>
+    <feBlend in="b" in2="SourceGraphic" mode="screen"/>
+  </filter>
+
+  <filter id="aberration" color-interpolation-filters="sRGB">
+    <feColorMatrix in="SourceGraphic" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="r"/>
+    <feColorMatrix in="SourceGraphic" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="g"/>
+    <feColorMatrix in="SourceGraphic" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="b"/>
+    <feOffset id="abR" in="r" dx="-2.5" result="r2"/>
+    <feOffset id="abB" in="b" dx="2.5" result="b2"/>
+    <feBlend in="r2" in2="g" mode="screen" result="rg"/>
+    <feBlend in="rg" in2="b2" mode="screen"/>
+  </filter>
+
+  <filter id="vhs" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.001 0.5" numOctaves="2" seed="1" result="noise">
+      <animate attributeName="baseFrequency" dur="6s" repeatCount="indefinite" values="0.001 0.5; 0.001 0.9; 0.001 0.3; 0.001 0.5"/>
+      <animate attributeName="seed" dur="0.8s" repeatCount="indefinite" calcMode="discrete" values="1;2;3;4;5;6;7;8"/>
+    </feTurbulence>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G">
+      <animate id="vhsScale" attributeName="scale" dur="5s" repeatCount="indefinite" keyTimes="0; 0.6; 0.62; 0.66; 0.7; 1" values="2; 2; 40; 8; 28; 2"/>
+    </feDisplacementMap>
+  </filter>
+
+  <filter id="grain" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="3" stitchTiles="stitch" result="n"/>
+    <feColorMatrix in="n" type="saturate" values="0" result="mono"/>
+    <feComponentTransfer in="mono" result="faint"><feFuncA id="grainA" type="linear" slope=".6"/></feComponentTransfer>
+    <feBlend in="faint" in2="SourceGraphic" mode="overlay"/>
+  </filter>
+</svg>
+
+<div class="wrap">
+  <header>
+    <h1>Filter <span>Reel</span></h1>
+    <p>Cinematic looks made only from CSS <code>filter()</code> and SVG filters. Pick a grade, stack effects, and copy the code for your own page.</p>
+  </header>
+
+  <div class="layout">
+    <section class="stage-col" aria-label="Preview">
+      <div class="frame">
+        <div class="stage" id="stage">
+          <svg viewBox="0 0 960 402" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Dusk landscape with a cabin, pines and a figure holding a lantern">
+            <defs>
+              <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#4a6fb5"/>
+                <stop offset=".4" stop-color="#b07fb0"/>
+                <stop offset=".72" stop-color="#ff8a4a"/>
+                <stop offset="1" stop-color="#ffd98a"/>
+              </linearGradient>
+              <radialGradient id="sunGlow">
+                <stop offset="0" stop-color="#fff3c9" stop-opacity=".95"/>
+                <stop offset="1" stop-color="#fff3c9" stop-opacity="0"/>
+              </radialGradient>
+              <radialGradient id="lampGlow">
+                <stop offset="0" stop-color="#ffd070" stop-opacity=".9"/>
+                <stop offset="1" stop-color="#ffd070" stop-opacity="0"/>
+              </radialGradient>
+              <g id="pine">
+                <polygon points="0,-70 18,-38 -18,-38"/>
+                <polygon points="0,-52 24,-14 -24,-14"/>
+                <polygon points="0,-30 30,14 -30,14"/>
+                <rect x="-4" y="14" width="8" height="16"/>
+              </g>
+            </defs>
+            <rect width="960" height="402" fill="url(#sky)"/>
+            <circle cx="650" cy="250" r="170" fill="url(#sunGlow)"/>
+            <circle cx="650" cy="250" r="40" fill="#fff6d6"/>
+            <g fill="#ffb08a" opacity=".55">
+              <ellipse cx="220" cy="120" rx="120" ry="10"/>
+              <ellipse cx="330" cy="140" rx="90" ry="7"/>
+              <ellipse cx="780" cy="110" rx="140" ry="9"/>
+              <ellipse cx="880" cy="150" rx="70" ry="6"/>
+            </g>
+            <path d="M0 270 L90 205 L170 250 L260 180 L360 255 L450 215 L560 270 L640 230 L760 268 L850 200 L960 258 L960 402 L0 402Z" fill="#3a2f57"/>
+            <path d="M0 310 L120 262 L220 300 L330 255 L430 305 L540 280 L650 318 L780 270 L880 300 L960 280 L960 402 L0 402Z" fill="#2a2040"/>
+            <path d="M0 350 Q240 318 480 345 T960 335 L960 402 L0 402Z" fill="#130f1f"/>
+            <g fill="#150f22">
+              <use href="#pine" transform="translate(40 330) scale(1.3)"/>
+              <use href="#pine" transform="translate(96 340) scale(.9)"/>
+              <use href="#pine" transform="translate(330 335) scale(1.1)"/>
+              <use href="#pine" transform="translate(385 345) scale(.8)"/>
+              <use href="#pine" transform="translate(770 332) scale(1.25)"/>
+              <use href="#pine" transform="translate(830 345) scale(.85)"/>
+              <use href="#pine" transform="translate(910 328) scale(1.4)"/>
+            </g>
+            <g fill="#130f1f">
+              <rect x="560" y="300" width="84" height="50"/>
+              <polygon points="550,302 602,266 654,302"/>
+              <rect x="626" y="274" width="9" height="22"/>
+            </g>
+            <rect x="578" y="316" width="18" height="16" fill="#ffd070"/>
+            <rect x="610" y="322" width="16" height="28" fill="#0b0912"/>
+            <line x1="672" y1="350" x2="672" y2="320" stroke="#130f1f" stroke-width="3"/>
+            <rect x="660" y="304" width="46" height="20" rx="3" fill="none" stroke="#3ff0e0" stroke-width="2"/>
+            <text x="683" y="319" text-anchor="middle" font-size="13" fill="#3ff0e0" font-family="IBM Plex Mono, monospace" font-weight="500">OPEN</text>
+            <circle cx="232" cy="336" r="26" fill="url(#lampGlow)"/>
+            <g fill="#0b0912">
+              <circle cx="200" cy="300" r="7"/>
+              <rect x="192" y="308" width="16" height="26" rx="6"/>
+              <rect x="193" y="330" width="6" height="22"/>
+              <rect x="201" y="330" width="6" height="22"/>
+              <rect x="206" y="314" width="22" height="5" rx="2"/>
+            </g>
+            <circle cx="232" cy="336" r="4.5" fill="#ffd070"/>
+            <g transform="translate(770 22)">
+              <rect width="20" height="12" fill="#ffffff"/>
+              <rect x="20" width="20" height="12" fill="#ffe600"/>
+              <rect x="40" width="20" height="12" fill="#00e5e5"/>
+              <rect x="60" width="20" height="12" fill="#00d84a"/>
+              <rect x="80" width="20" height="12" fill="#ff2bd6"/>
+              <rect x="100" width="20" height="12" fill="#ff2b2b"/>
+              <rect x="120" width="20" height="12" fill="#2b4bff"/>
+            </g>
+            <text class="scene-title" x="36" y="66" font-size="38" letter-spacing="3" fill="#fff6e8">THE LAST LIGHT</text>
+            <text class="scene-sub" x="37" y="86" font-size="11" letter-spacing="4" fill="#fff6e8" opacity=".85">FILTER TEST SCENE</text>
+          </svg>
+        </div>
+      </div>
+      <div class="readout" aria-live="polite">
+        <span>Filter chain: <b id="chain">No filter</b></span>
+        <span>Filters run left to right.</span>
+      </div>
+    </section>
+
+    <aside class="ctrl" aria-label="Controls">
+      <div>
+        <p class="label">Grade (pick one)</p>
+        <div class="chips" id="grades">
+          <label class="chip"><input type="radio" name="grade" value="none" checked><span>None</span></label>
+          <label class="chip"><input type="radio" name="grade" value="tealorange"><span>Teal &amp; orange</span></label>
+          <label class="chip"><input type="radio" name="grade" value="faded"><span>Faded 70s</span></label>
+          <label class="chip"><input type="radio" name="grade" value="noir"><span>Noir</span></label>
+          <label class="chip"><input type="radio" name="grade" value="duotone"><span>Duotone</span></label>
+          <label class="chip"><input type="radio" name="grade" value="split"><span>Split-tone</span></label>
+          <label class="chip"><input type="radio" name="grade" value="silhouette"><span>Silhouette</span></label>
+        </div>
+      </div>
+
+      <div>
+        <p class="label">Effects (stack any)</p>
+        <div class="chips">
+          <label class="chip"><input type="checkbox" id="fx-bloom"><span>Bloom</span></label>
+          <label class="chip"><input type="checkbox" id="fx-aberration"><span>Aberration</span></label>
+          <label class="chip"><input type="checkbox" id="fx-vhs"><span>VHS tearing</span></label>
+          <label class="chip"><input type="checkbox" id="fx-grain"><span>Film grain</span></label>
+        </div>
+      </div>
+
+      <div>
+        <p class="label">Tuning</p>
+        <div class="tune">
+          <p class="hint" id="noTune">Bloom, aberration, VHS, grain and silhouette have controls. Pick one to tune it.</p>
+
+          <div class="row" id="t-bloom" hidden>
+            <div class="top"><label for="bloomR">Bloom radius</label><output id="bloomRo">5</output></div>
+            <input type="range" id="bloomR" min="0" max="14" step="0.5" value="5">
+          </div>
+
+          <div class="row" id="t-aberration" hidden>
+            <div class="top"><label for="abDx">Channel offset</label><output id="abDxo">2.5 px</output></div>
+            <input type="range" id="abDx" min="0" max="8" step="0.25" value="2.5">
+          </div>
+
+          <div class="row" id="t-vhs" hidden>
+            <div class="top"><label for="vhsAmt">Tear intensity</label><output id="vhsAmto">1.0x</output></div>
+            <input type="range" id="vhsAmt" min="0" max="3" step="0.1" value="1">
+            <button type="button" id="pause">Pause animation</button>
+          </div>
+
+          <div class="row" id="t-grain" hidden>
+            <div class="top"><label for="grainAmt">Grain strength</label><output id="grainAmto">0.60</output></div>
+            <input type="range" id="grainAmt" min="0" max="1.5" step="0.05" value="0.6">
+          </div>
+
+          <div class="row" id="t-sil" hidden>
+            <div class="top"><label for="silT">Threshold</label><output id="silTo">0.32</output></div>
+            <input type="range" id="silT" min="0.05" max="0.9" step="0.01" value="0.32">
+            <div class="pair">
+              <label for="silDark"><input type="color" id="silDark" value="#0a0814"> Shadow</label>
+              <label for="silLight"><input type="color" id="silLight" value="#ff9a3c"> Light</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <label class="check" for="whole">
+        <input type="checkbox" id="whole">
+        <span>Filter the entire page<small>Applies the chain to the html element, controls included.</small></span>
+      </label>
+    </aside>
+
+    <section class="code-col" aria-label="Generated code">
+      <div class="code-head">
+        <p class="label" style="margin:0">Code for this look</p>
+        <button type="button" class="primary" id="copy">Copy code</button>
+      </div>
+      <pre id="code" tabindex="0"></pre>
+      <p class="note">Put the SVG block anywhere in the same document, then add the CSS rule. Grain and VHS recompute noise, so they cost more than the plain CSS grades on slow devices.</p>
+    </section>
+  </div>
+</div>
+
+<script>
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+  var stage = $('#stage');
+  var defs = $('#defs');
+
+  var grades = {
+    none:       { name: '',              f: '' },
+    tealorange: { name: 'Teal & orange', f: 'saturate(.8) contrast(1.2) brightness(.95) hue-rotate(-10deg)' },
+    faded:      { name: 'Faded 70s',     f: 'sepia(.35) contrast(.85) brightness(1.05) saturate(.8)' },
+    noir:       { name: 'Noir',          f: 'grayscale(1) contrast(1.4) brightness(.95)' },
+    duotone:    { name: 'Duotone',       f: 'url(#duotone)', svg: ['duotone'] },
+    split:      { name: 'Split-tone',    f: 'url(#grade) contrast(1.15)', svg: ['grade'] },
+    silhouette: { name: 'Silhouette',    f: 'url(#silhouette)', svg: ['silhouette'] }
+  };
+  var effects = [
+    { id: 'bloom', name: 'Bloom' },
+    { id: 'aberration', name: 'Aberration' },
+    { id: 'vhs', name: 'VHS tearing' },
+    { id: 'grain', name: 'Film grain' }
+  ];
+
+  function hexToRgb(h) {
+    var n = parseInt(h.slice(1), 16);
+    return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255];
+  }
+  function r2(x) { return Math.round(x * 1000) / 1000; }
+
+  /* ---- tuning handlers ---- */
+  function setBloom() {
+    var v = $('#bloomR').value;
+    $('#bloom feGaussianBlur').setAttribute('stdDeviation', v);
+    $('#bloomRo').textContent = v;
+  }
+  function setAb() {
+    var v = parseFloat($('#abDx').value);
+    $('#abR').setAttribute('dx', -v);
+    $('#abB').setAttribute('dx', v);
+    $('#abDxo').textContent = v + ' px';
+  }
+  function setVhs() {
+    var a = parseFloat($('#vhsAmt').value);
+    var calm = 2;
+    var vals = [calm, calm, r2(40 * a), r2(8 * a), r2(28 * a), calm].join('; ');
+    $('#vhsScale').setAttribute('values', vals);
+    $('#vhsAmto').textContent = a.toFixed(1) + 'x';
+  }
+  function setGrain() {
+    var v = parseFloat($('#grainAmt').value);
+    $('#grainA').setAttribute('slope', v);
+    $('#grainAmto').textContent = v.toFixed(2);
+  }
+  function setSil() {
+    var t = parseFloat($('#silT').value);
+    var n = 40, k = Math.round(t * n);
+    var d = hexToRgb($('#silDark').value), l = hexToRgb($('#silLight').value);
+    ['R', 'G', 'B'].forEach(function (c, ci) {
+      var arr = [];
+      for (var i = 0; i < n; i++) arr.push(r2(i < k ? d[ci] : l[ci]));
+      $('#sil' + c).setAttribute('tableValues', arr.join(' '));
+    });
+    $('#silTo').textContent = t.toFixed(2);
+  }
+
+  /* ---- code output ---- */
+  function pretty(x) {
+    var depth = 0;
+    return x.replace(/>\s*</g, '>\n<').split('\n').map(function (l) {
+      if (/^<\//.test(l)) depth--;
+      var out = '  '.repeat(Math.max(depth, 0)) + l;
+      if (/^<[^\/!][^>]*[^\/]>$/.test(l)) depth++;
+      return out;
+    }).join('\n');
+  }
+  function svgFor(ids) {
+    var ser = new XMLSerializer();
+    var body = ids.map(function (id) {
+      var s = ser.serializeToString(document.getElementById(id)).replace(/ xmlns="[^"]*"/g, '');
+      return pretty(s).split('\n').map(function (l) { return '  ' + l; }).join('\n');
+    }).join('\n\n');
+    return '<svg width="0" height="0" style="position:absolute" aria-hidden="true">\n' + body + '\n</svg>';
+  }
+
+  /* ---- apply ---- */
+  function apply() {
+    var g = document.querySelector('input[name=grade]:checked').value;
+    var parts = [], names = [], svgIds = [];
+    if (grades[g].f) {
+      parts.push(grades[g].f);
+      names.push(grades[g].name);
+      if (grades[g].svg) svgIds = svgIds.concat(grades[g].svg);
+    }
+    effects.forEach(function (e) {
+      if ($('#fx-' + e.id).checked) {
+        parts.push('url(#' + e.id + ')');
+        names.push(e.name);
+        svgIds.push(e.id);
+      }
+    });
+    var val = parts.join(' ');
+    var whole = $('#whole').checked;
+    stage.style.filter = whole ? '' : val;
+    document.documentElement.style.filter = whole ? val : '';
+
+    $('#chain').textContent = names.length ? names.join(' → ') : 'No filter';
+
+    var target = whole ? 'html' : '.screen';
+    var css = val ? target + ' {\n  filter: ' + val + ';\n}' : '/* No filter selected. */';
+    $('#code').textContent = css + (svgIds.length ? '\n\n' + svgFor(svgIds) : '');
+
+    $('#t-bloom').hidden = !$('#fx-bloom').checked;
+    $('#t-aberration').hidden = !$('#fx-aberration').checked;
+    $('#t-vhs').hidden = !$('#fx-vhs').checked;
+    $('#t-grain').hidden = !$('#fx-grain').checked;
+    $('#t-sil').hidden = g !== 'silhouette';
+    $('#noTune').hidden = !!document.querySelectorAll('.tune .row:not([hidden])').length;
+  }
+
+  /* ---- wiring ---- */
+  var tunes = [['#bloomR', setBloom], ['#abDx', setAb], ['#vhsAmt', setVhs], ['#grainAmt', setGrain],
+               ['#silT', setSil], ['#silDark', setSil], ['#silLight', setSil]];
+  tunes.forEach(function (t) {
+    $(t[0]).addEventListener('input', function () { t[1](); apply(); });
+  });
+  document.querySelectorAll('input[name=grade], #fx-bloom, #fx-aberration, #fx-vhs, #fx-grain, #whole')
+    .forEach(function (el) { el.addEventListener('change', apply); });
+
+  var paused = false;
+  function setPaused(p) {
+    paused = p;
+    try { p ? defs.pauseAnimations() : defs.unpauseAnimations(); } catch (e) {}
+    $('#pause').textContent = p ? 'Resume animation' : 'Pause animation';
+  }
+  $('#pause').addEventListener('click', function () { setPaused(!paused); });
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) setPaused(true);
+
+  var copyBtn = $('#copy');
+  copyBtn.addEventListener('click', function () {
+    var text = $('#code').textContent;
+    function flash(msg) {
+      copyBtn.textContent = msg;
+      setTimeout(function () { copyBtn.textContent = 'Copy code'; }, 1600);
+    }
+    function fallback() {
+      var r = document.createRange();
+      r.selectNodeContents($('#code'));
+      var s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      flash('Selected, press copy');
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { flash('Copied'); }, fallback);
+    } else { fallback(); }
+  });
+
+  setBloom(); setAb(); setVhs(); setGrain(); setSil();
+  /* Open on a finished look rather than an untouched frame. */
+  document.querySelector('input[name=grade][value=tealorange]').checked = true;
+  $('#fx-grain').checked = true;
+  apply();
+})();
+</script>
+
+</body></html>
